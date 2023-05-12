@@ -20,6 +20,15 @@ LOG_MODULE_REGISTER(net_dhcpv4_client_sample, LOG_LEVEL_DBG);
 #include <zephyr/net/net_context.h>
 #include <zephyr/net/net_mgmt.h>
 
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+
+#define HTTP_HOST "google.com"
+#define HTTP_PORT "443"
+#define HTTP_PATH "/"
+
 static struct net_mgmt_event_callback mgmt_cb;
 
 static void handler(struct net_mgmt_event_callback *cb,
@@ -55,6 +64,7 @@ static void handler(struct net_mgmt_event_callback *cb,
 						 &iface->config.ip.ipv4->gw,
 						 buf, sizeof(buf)));
 	}
+
 }
 
 int main(void)
@@ -70,5 +80,24 @@ int main(void)
 	iface = net_if_get_default();
 
 	net_dhcpv4_start(iface);
+
+	static struct addrinfo hints;
+	struct addrinfo *res;
+	int st, sock;
+
+//#if defined(CONFIG_NET_SOCKETS_SOCKOPT_TLS)
+//	tls_credential_add(CA_CERTIFICATE_TAG, TLS_CREDENTIAL_CA_CERTIFICATE,
+//			   ca_certificate, sizeof(ca_certificate));
+//#endif
+	// TODO fix this sloppy crap
+	sleep(10);
+
+	printf("Preparing HTTP GET request for http://" HTTP_HOST
+	       ":" HTTP_PORT HTTP_PATH "\n");
+
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	st = getaddrinfo(HTTP_HOST, HTTP_PORT, &hints, &res);
+	printf("getaddrinfo status: %d\n", st);
 	return 0;
 }
