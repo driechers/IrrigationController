@@ -6,7 +6,9 @@
 DEVICE     = attiny85           # See avr-help for all possible devices
 CLOCK      = 1000000            # 1Mhz
 PROGRAMMER = -c usbtiny -P usb  # For using Adafruit USBtiny
-OBJECTS    = main.o i2c_primary.o
+COMMON     = i2c_primary.o soil_sensor.o eeprom.o
+OBJECTS    = main.o power_controller.o solenoid.o $(COMMON)
+TESTER_OBJECTS    = soil_tester.o $(COMMON)
 #FUSES      = -U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m  # settings as taken from http://www.engbedded.com/fusecalc/
 
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE)
@@ -33,7 +35,7 @@ flash: all
 install: flash
 
 clean:
-	rm -f main.hex main.elf $(OBJECTS)
+	rm -f main.hex main.elf $(OBJECTS) $(TESTER_OBJECTS)
 
 # file targets:
 main.elf: $(OBJECTS)
@@ -50,3 +52,13 @@ disasm: main.elf
 
 cpp:
 	$(COMPILE) -E main.c
+
+soil_tester: $(TESTER_OBJECTS)
+	$(COMPILE) -o main.elf $(TESTER_OBJECTS)
+	rm -f main.hex
+	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
+	avr-size --format=avr --mcu=$(DEVICE) main.elf
+	$(AVRDUDE) -U flash:w:main.hex:i
+
+read:
+	$(AVRDUDE) -U eeprom:r:eeprom.dat:r
