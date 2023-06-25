@@ -1,7 +1,7 @@
 
 #include <avr/io.h>
 
-unsigned char EEPROM_read(unsigned char ucAddress)
+uint8_t EEPROM_read(uint8_t ucAddress)
 {
 	/* Wait for completion of previous write */
 	while(EECR & (1<<EEPE));
@@ -14,7 +14,7 @@ unsigned char EEPROM_read(unsigned char ucAddress)
 	return EEDR;
 }
 
-void EEPROM_write(unsigned char ucAddress, unsigned char ucData)
+void EEPROM_write(uint8_t ucAddress, uint8_t ucData)
 {
 	/* Wait for completion of previous write */
 	while(EECR & (1<<EEPE));
@@ -30,3 +30,14 @@ void EEPROM_write(unsigned char ucAddress, unsigned char ucData)
 	EECR |= (1<<EEPE);
 }
 
+uint16_t EEPROM_read_word(uint8_t ucAddress)
+{
+	return EEPROM_read(ucAddress) << 8 |
+		EEPROM_read(ucAddress + 1);
+}
+
+void EEPROM_write_word(uint8_t ucAddress, uint16_t ucData)
+{
+	EEPROM_write(ucAddress, ucData >> 8);
+	EEPROM_write(ucAddress + 1, ucData & 0xff);
+}
