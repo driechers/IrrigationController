@@ -15,8 +15,13 @@ void power_controller_init()
 
 void low_power_mode()
 {
-	PORTB |= (1 << DONE);
-	_delay_ms(30);
-	PORTB &= ~(1 << DONE);
-	_delay_ms(30);
+	// Once should do it but if the manual start
+	// is held down the pulse has no effect
+	while(1)
+	{
+		PORTB |= (1 << DONE);
+		_delay_ms(30);
+		PORTB &= ~(1 << DONE);
+		_delay_ms(30);
+	}
 }
