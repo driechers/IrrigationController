@@ -6,8 +6,8 @@
 DEVICE     = attiny85           # See avr-help for all possible devices
 CLOCK      = 1000000            # 1Mhz
 PROGRAMMER = -c usbtiny -P usb  # For using Adafruit USBtiny
-COMMON     = i2c_primary.o soil_sensor.o eeprom.o
-OBJECTS    = main.o power_controller.o solenoid.o $(COMMON)
+COMMON     = i2c_primary.o soil_sensor.o eeprom.o power_controller.o
+OBJECTS    = main.o solenoid.o $(COMMON)
 TESTER_OBJECTS    = soil_tester.o $(COMMON)
 #FUSES      = -U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m  # settings as taken from http://www.engbedded.com/fusecalc/
 

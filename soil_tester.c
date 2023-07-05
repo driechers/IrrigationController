@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "power_controller.h"
 #include "soil_sensor.h"
 #include "eeprom.h"
 
@@ -22,6 +23,10 @@ int main () {
 	moist >>= 8;
 	EEPROM_write(index, moist & 0xff);
 	EEPROM_write(0, index+2);
+
+	_delay_ms(30);
+
+	low_power_mode();
 
 	return 0;
 }
